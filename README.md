@@ -1,4 +1,4 @@
-# Pillar test project
+# Pillar test
 
 A new Flutter project.
 
