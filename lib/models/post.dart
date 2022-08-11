@@ -5,13 +5,13 @@ part 'post.g.dart';
 @JsonSerializable()
 class Post {
   @JsonKey(name: "userId")
-  late int id;
+  late int userId;
 
   @JsonKey(name: "title")
-  late String email;
+  late String title;
 
-  @JsonKey(name: "description")
-  late String name;
+  @JsonKey(name: "body")
+  late String description;
 
   Post();
 

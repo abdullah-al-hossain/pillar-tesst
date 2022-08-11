@@ -1,3 +1,4 @@
+import 'package:api_call_dio/models/post.dart';
 import 'package:dio/dio.dart';
 import 'models/user.dart';
 
@@ -13,7 +14,20 @@ class HttpService {
     initializeInterceptors();
   }
 
-  Future<List<User>> getRequest(String endPoint) async {
+  Future<List<Post>> getPost(String endPoint) async {
+    Response response;
+
+    try {
+      response = await _dio.get(endPoint);
+    } on DioError catch (e) {
+      print(e.message);
+      throw Exception(e.message);
+    }
+    print(response.data);
+    return (response.data as List).map((i) => Post.fromJson(i)).toList();
+  }
+
+  Future<List<User>> getUser(String endPoint) async {
     Response response;
 
     try {
@@ -26,30 +40,19 @@ class HttpService {
     return (response.data as List).map((i) => User.fromJson(i)).toList();
   }
 
-
   initializeInterceptors(){
     _dio.interceptors.add(InterceptorsWrapper(
         onRequest:(options, handler){
           print("${options.method} ${options.path}");
-          return handler.next(options); //continue
-          // If you want to resolve the request with some custom data，
-          // you can resolve a `Response` object eg: `handler.resolve(response)`.
-          // If you want to reject the request with a error message,
-          // you can reject a `DioError` object eg: `handler.reject(dioError)`
+          return handler.next(options);
         },
         onResponse:(response,handler) {
-          // Do something with response data
-          // print(response.data);
-          return handler.next(response); // continue
-          // If you want to reject the request with a error message,
-          // you can reject a `DioError` object eg: `handler.reject(dioError)`
+          print(response);
+          return handler.next(response);
         },
         onError: (DioError e, handler) {
-          // Do something with response error
           print(e.message);
-          return  handler.next(e);//continue
-          // If you want to resolve the request with some custom data，
-          // you can resolve a `Response` object eg: `handler.resolve(response)`.
+          return  handler.next(e);
         }
     ));
   }

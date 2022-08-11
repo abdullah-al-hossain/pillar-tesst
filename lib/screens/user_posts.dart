@@ -1,32 +1,43 @@
+import 'package:api_call_dio/models/post.dart';
 import 'package:api_call_dio/models/user.dart';
-import 'package:api_call_dio/screens/user_posts.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:api_call_dio/http_service.dart';
 import 'dart:convert';
 
-class UsersView extends StatefulWidget {
+class PostsView extends StatefulWidget {
   @override
-  _UsersViewState createState() => _UsersViewState();
+  _UsersScreenState createState() => _UsersScreenState();
+
+  final int userId;
+
+  const PostsView({
+    required this.userId
+  });
 }
 
-class _UsersViewState extends State<UsersView> {
+class _UsersScreenState extends State<PostsView> {
   late HttpService _httpService;
-  late User user;
-  late List<User> userList;
+  late Post post;
+  late List<Post> postList;
+  late List<Post> filteredPost;
 
   bool isLoading = false;
 
-  Future getUser() async {
+  Future getPost() async {
     Response response;
     try {
+
       isLoading = true;
       await Future.delayed(Duration(seconds: 1));
-      final List<User> users = await _httpService.getUser('users');
+      final List<Post> posts = await _httpService.getPost('posts');
       isLoading = false;
+      final filteredPost = posts.where((post) {
+        return post.userId == widget.userId;
+      }).toList();
 
       setState(() {
-        userList = users;
+        postList = filteredPost;
       });
 
     } on Exception catch (e) {
@@ -39,7 +50,7 @@ class _UsersViewState extends State<UsersView> {
   void initState() {
 
     _httpService = HttpService();
-    getUser();
+    getPost();
     super.initState();
   }
 
@@ -47,33 +58,25 @@ class _UsersViewState extends State<UsersView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Users"),
+        title: Text("Posts"),
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
-          : userList != null ? ListView.builder(
-          itemCount: userList.length,
+          : postList != null ? ListView.builder(
+          itemCount: postList.length,
           itemBuilder: (context, index) {
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 4.0),
               child: Card(
                 child: ListTile(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => PostsView(userId: userList[index].id)),
-                    );
-                  },
-                  title: Text(userList[index].name),
-                  leading: CircleAvatar(
-                    backgroundImage:
-                    AssetImage('assets/images/default_avatar.png'),
-                  ),
+                  onTap: () {},
+                  title: Text(postList[index].title),
+                  subtitle: Text(postList[index].description),
                 ),
               ),
             );
           }
-      ): Center(child : Text("No User Object")),
+      ): Center(child : Text("No Post Object")),
     );
   }
 }
