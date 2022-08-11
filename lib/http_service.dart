@@ -1,13 +1,11 @@
 import 'package:dio/dio.dart';
+import 'models/user.dart';
 
-
-
-class HttpService{
+class HttpService {
   late Dio _dio;
-
   final baseUrl = "https://jsonplaceholder.typicode.com/";
 
-  HttpService(){
+  HttpService() {
     _dio = Dio(BaseOptions(
       baseUrl: baseUrl,
     ));
@@ -15,8 +13,7 @@ class HttpService{
     initializeInterceptors();
   }
 
-
-  Future<Response> getRequest(String endPoint) async{
+  Future<List<User>> getRequest(String endPoint) async {
     Response response;
 
     try {
@@ -25,22 +22,34 @@ class HttpService{
       print(e.message);
       throw Exception(e.message);
     }
-
-    return response;
-
+    print(response.data);
+    return (response.data as List).map((i) => User.fromJson(i)).toList();
   }
 
 
   initializeInterceptors(){
     _dio.interceptors.add(InterceptorsWrapper(
-        onError: (error, errorInterceptorHandler){
-          print(error.message);
+        onRequest:(options, handler){
+          print("${options.method} ${options.path}");
+          return handler.next(options); //continue
+          // If you want to resolve the request with some custom data，
+          // you can resolve a `Response` object eg: `handler.resolve(response)`.
+          // If you want to reject the request with a error message,
+          // you can reject a `DioError` object eg: `handler.reject(dioError)`
         },
-        onRequest: (request, requestInterceptorHandler){
-          print("${request.method} ${request.path}");
+        onResponse:(response,handler) {
+          // Do something with response data
+          // print(response.data);
+          return handler.next(response); // continue
+          // If you want to reject the request with a error message,
+          // you can reject a `DioError` object eg: `handler.reject(dioError)`
         },
-        onResponse: (response, responseInterceptorHandler){
-          print(response.data);
+        onError: (DioError e, handler) {
+          // Do something with response error
+          print(e.message);
+          return  handler.next(e);//continue
+          // If you want to resolve the request with some custom data，
+          // you can resolve a `Response` object eg: `handler.resolve(response)`.
         }
     ));
   }

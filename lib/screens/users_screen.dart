@@ -4,14 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:api_call_dio/http_service.dart';
 import 'dart:convert';
 
-class SingleUserScreen extends StatefulWidget {
+class UsersScreen extends StatefulWidget {
   @override
-  _SingleUserScreenState createState() => _SingleUserScreenState();
+  _UsersScreenState createState() => _UsersScreenState();
 }
 
-class _SingleUserScreenState extends State<SingleUserScreen> {
-  late HttpService http;
+class _UsersScreenState extends State<UsersScreen> {
+  late HttpService _httpService;
   late User user;
+  late List<User> userList;
 
   bool isLoading = false;
 
@@ -19,27 +20,14 @@ class _SingleUserScreenState extends State<SingleUserScreen> {
     Response response;
     try {
       isLoading = true;
-
       await Future.delayed(Duration(seconds: 1));
-      var response = await Dio().get('https://jsonplaceholder.typicode.com/users');
-      // response = await http.getRequest('users/2');
-      // print(response.data);
+      final List<User> users = await _httpService.getRequest('users');
       isLoading = false;
 
-      if (response.statusCode == 200) {
-        print("here");
+      setState(() {
+        userList = users;
+      });
 
-        userList = response.data;
-
-        print(userList);
-
-        setState(() {
-          userList = json.decode(response.data);
-        });
-
-      } else {
-        print("There is some problem status code not 200");
-      }
     } on Exception catch (e) {
       isLoading = false;
       print(e);
@@ -49,10 +37,8 @@ class _SingleUserScreenState extends State<SingleUserScreen> {
   @override
   void initState() {
 
-    http = HttpService();
-
+    _httpService = HttpService();
     getUser();
-
     super.initState();
   }
 
@@ -60,7 +46,7 @@ class _SingleUserScreenState extends State<SingleUserScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Get Single user"),
+        title: Text("Users"),
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
@@ -72,7 +58,7 @@ class _SingleUserScreenState extends State<SingleUserScreen> {
               child: Card(
                 child: ListTile(
                   onTap: () {},
-                  title: Text(userList[index].name<String,dynamic>()),
+                  title: Text(userList[index].name),
                   leading: CircleAvatar(
                     backgroundImage: AssetImage('assets/something.jpg'),
                   ),

@@ -1,4 +1,4 @@
-import 'package:api_call_dio/screens/single_user_screen.dart';
+import 'package:api_call_dio/screens/users_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: SingleUserScreen(),
+      home: UsersScreen(),
     );
   }
 }
