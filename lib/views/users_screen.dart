@@ -1,8 +1,8 @@
 import 'package:api_call_dio/models/user.dart';
-import 'package:api_call_dio/screens/user_posts.dart';
+import 'package:api_call_dio/views/user_posts.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:api_call_dio/http_service.dart';
+import 'package:api_call_dio/services/http_service.dart';
 import 'dart:convert';
 
 class UsersView extends StatefulWidget {

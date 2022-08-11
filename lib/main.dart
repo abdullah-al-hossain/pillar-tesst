@@ -1,4 +1,4 @@
-import 'package:api_call_dio/screens/users_screen.dart';
+import 'package:api_call_dio/views/users_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
