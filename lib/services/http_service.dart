@@ -32,6 +32,7 @@ class HttpService {
     return (response.data as List).map((i) => Post.fromJson(i)).toList();
   }
 
+
   Future<List<User>> getUser(String endPoint) async {
     Response response;
     DioCacheManager _dioCacheManager = DioCacheManager(CacheConfig());
