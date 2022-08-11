@@ -1,8 +1,8 @@
-import 'package:api_call_dio/models/single_user_response.dart';
 import 'package:api_call_dio/models/user.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:api_call_dio/http_service.dart';
+import 'dart:convert';
 
 class SingleUserScreen extends StatefulWidget {
   @override
@@ -11,7 +11,6 @@ class SingleUserScreen extends StatefulWidget {
 
 class _SingleUserScreenState extends State<SingleUserScreen> {
   late HttpService http;
-  late SingleUserResponse singleUserResponse;
   late User user;
 
   bool isLoading = false;
@@ -22,16 +21,20 @@ class _SingleUserScreenState extends State<SingleUserScreen> {
       isLoading = true;
 
       await Future.delayed(Duration(seconds: 1));
-      var response = await Dio().get('https://jsonplaceholder.typicode.com/users/1');
+      var response = await Dio().get('https://jsonplaceholder.typicode.com/users');
       // response = await http.getRequest('users/2');
       // print(response.data);
       isLoading = false;
 
       if (response.statusCode == 200) {
         print("here");
-        print(response.data);
+
+        userList = response.data;
+
+        print(userList);
+
         setState(() {
-          user = User.fromJson(response.data);
+          userList = json.decode(response.data);
         });
 
       } else {
@@ -61,15 +64,22 @@ class _SingleUserScreenState extends State<SingleUserScreen> {
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
-          : user != null ? Container(
-        width: double.infinity,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(height: 16,),
-            Text("Hello, ${user.name} ${user.email}")
-          ],
-        ),
+          : userList != null ? ListView.builder(
+          itemCount: userList.length,
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 4.0),
+              child: Card(
+                child: ListTile(
+                  onTap: () {},
+                  title: Text(userList[index].name<String,dynamic>()),
+                  leading: CircleAvatar(
+                    backgroundImage: AssetImage('assets/something.jpg'),
+                  ),
+                ),
+              ),
+            );
+          }
       ): Center(child : Text("No User Object")),
     );
   }
