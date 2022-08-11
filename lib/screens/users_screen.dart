@@ -60,7 +60,8 @@ class _UsersScreenState extends State<UsersScreen> {
                   onTap: () {},
                   title: Text(userList[index].name),
                   leading: CircleAvatar(
-                    backgroundImage: AssetImage('assets/something.jpg'),
+                    backgroundImage:
+                    AssetImage('assets/images/default_avatar.png'),
                   ),
                 ),
               ),
