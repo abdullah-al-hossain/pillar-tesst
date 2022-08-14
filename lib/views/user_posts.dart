@@ -1,9 +1,7 @@
 import 'package:api_call_dio/models/post.dart';
-import 'package:api_call_dio/models/user.dart';
+import 'package:api_call_dio/services/data_provider_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:api_call_dio/services/http_service.dart';
-import 'dart:convert';
 
 class PostsView extends StatefulWidget {
   @override
@@ -17,7 +15,7 @@ class PostsView extends StatefulWidget {
 }
 
 class _UsersScreenState extends State<PostsView> {
-  late HttpService _httpService;
+  late DataProvider _dataProvider;
   late Post post;
   late List<Post> postList;
   late List<Post> filteredPost;
@@ -30,7 +28,7 @@ class _UsersScreenState extends State<PostsView> {
 
       isLoading = true;
       await Future.delayed(Duration(seconds: 1));
-      final List<Post> posts = await _httpService.getPost('posts');
+      final List<Post> posts = await _dataProvider.getPost('posts');
       isLoading = false;
       final filteredPost = posts.where((post) {
         return post.userId == widget.userId;
@@ -48,8 +46,7 @@ class _UsersScreenState extends State<PostsView> {
 
   @override
   void initState() {
-
-    _httpService = HttpService();
+    _dataProvider = DataProvider();
     getPost();
     super.initState();
   }
