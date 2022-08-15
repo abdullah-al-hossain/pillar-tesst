@@ -37,8 +37,9 @@ dependencies:
   dio: ^4.0.6
   json_serializable: ^4.1.4
   dio_http_cache: ^0.3.0
-  flutter_bloc: ^4.0.1
+  flutter_bloc: ^8.0.2
   equatable: ^2.0.3
+  connectivity_plus: ^2.2.0
 
 flutter_icons:
   android: "launcher_icon"

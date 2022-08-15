@@ -27,9 +27,16 @@ class _UsersViewState extends State<UsersView> {
   Widget build(BuildContext context) {
     return BlocBuilder<UserBloc, UserState>(
       builder: (context, state) {
+        if (state is UserNoInternetState) {
+          return Center(
+            child: Center(
+              child: Text('Please check your internet connection and try again'),
+            ),
+          );
+        }
         if (state is UserInitial) {
           return Center(
-            child: Text('Please try again. No user found yet.'),
+            child: Text('No user found yet.'),
           );
         }
         if (state is UserListProcessing) {
@@ -58,11 +65,7 @@ class _UsersViewState extends State<UsersView> {
             },
           );
         }
-        if (state is Error) {
-          return Center(
-            child: Text('Please check your internet connection and try again'),
-          );
-        }
+
         return Text('Something went wrong!');
       },
     );

@@ -5,8 +5,11 @@ abstract class UserEvent extends Equatable {
 }
 
 class FetchUserList extends UserEvent {
-  const FetchUserList();
-
   @override
   List<Object> get props => [];
+}
+
+class NoInternetEvent extends UserEvent {
+  @override
+  List<Object?> get props => [];
 }

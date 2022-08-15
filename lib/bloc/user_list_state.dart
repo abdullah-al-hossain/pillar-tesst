@@ -21,10 +21,10 @@ class UserLoaded extends UserState {
   const UserLoaded({required this.users});
 
   @override
-  List<Object> get props => [users];
+  List<Object?> get props => [users];
 }
 
-class Error extends UserState {
+class UserNoInternetState extends UserState {
   @override
   List<Object> get props => [];
 }
