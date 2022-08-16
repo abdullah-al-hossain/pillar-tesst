@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:api_call_dio/bloc/user_list_bloc.dart';
 import 'package:api_call_dio/bloc/user_list_state.dart';
 import 'package:api_call_dio/bloc/user_posts_bloc.dart';
@@ -5,6 +7,7 @@ import 'package:api_call_dio/bloc/user_posts_event.dart';
 import 'package:api_call_dio/services/connectivityService.dart';
 import 'package:api_call_dio/services/data_provider_service.dart';
 import 'package:api_call_dio/views/user_posts_screen.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -15,9 +18,28 @@ class UsersView extends StatefulWidget {
 
 class _UsersViewState extends State<UsersView> {
   late UserBloc userBloc;
+  bool status = false;
+  late StreamSubscription subscription;
+
+
+  Future<void> checkConnectivity() async {
+    var result = await Connectivity().checkConnectivity();
+
+    if(result == ConnectivityResult.none) {
+      setState(() {
+        status = false;
+      });
+    } else {
+      setState(() {
+        status = true;
+      });
+    }
+  }
 
   @override
   void initState() {
+    checkConnectivity();
+
     userBloc = BlocProvider.of<UserBloc>(context);
   }
 
@@ -29,7 +51,7 @@ class _UsersViewState extends State<UsersView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<UserBloc, UserState>(
+    return status ? BlocBuilder<UserBloc, UserState>(
       builder: (context, state) {
         if (state is UserInitial) {
           return Center(
@@ -87,6 +109,6 @@ class _UsersViewState extends State<UsersView> {
             child: Text('Something went wrong!'),
         );
       },
-    );
+    ) : Center(child: Text('No internet connection'));
   }
 }
