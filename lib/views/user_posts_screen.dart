@@ -70,7 +70,7 @@ class _PostViewState extends State<PostsView> {
                   return Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10.0),
-                      color: Colors.amber[300],
+                      color: Colors.lightBlueAccent,
                     ),
                     margin: const EdgeInsets.only(bottom: 10.0),
                     child: ListTile(

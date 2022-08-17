@@ -76,7 +76,7 @@ class _UsersViewState extends State<UsersView> {
 
                 return ListTile(
                   title: Text('${state.users[index].name}'),
-                  subtitle: Text('${state.users[index].username}'),
+                  subtitle: Text('${state.users[index].email}'),
                   leading: CircleAvatar(
                     backgroundImage:
                     AssetImage('assets/images/default_avatar.png'),
