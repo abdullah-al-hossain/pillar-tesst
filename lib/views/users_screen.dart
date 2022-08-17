@@ -18,29 +18,12 @@ class UsersView extends StatefulWidget {
 
 class _UsersViewState extends State<UsersView> {
   late UserBloc userBloc;
-  bool status = false;
-  late StreamSubscription subscription;
-
-
-  Future<void> checkConnectivity() async {
-    var result = await Connectivity().checkConnectivity();
-
-    if(result == ConnectivityResult.none) {
-      setState(() {
-        status = false;
-      });
-    } else {
-      setState(() {
-        status = true;
-      });
-    }
-  }
+  late GlobalKey<RefreshIndicatorState> refreshKey;
 
   @override
   void initState() {
-    checkConnectivity();
-
     userBloc = BlocProvider.of<UserBloc>(context);
+    refreshKey = GlobalKey<RefreshIndicatorState>();
   }
 
   @override
@@ -49,66 +32,81 @@ class _UsersViewState extends State<UsersView> {
     userBloc.close();
   }
 
+  Future<void> refresh() async {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text("Page Reloaded"),
+      duration: Duration(seconds: 1),
+    ));
+
+    return Future.delayed(
+      Duration(seconds: 1)
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return status ? BlocBuilder<UserBloc, UserState>(
-      builder: (context, state) {
-        if (state is UserInitial) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-        if (state is UserListProcessing) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-        if (state is UserNoInternetState) {
-          return Center(
-            child: Center(
-              child: Text('Please check your internet connection and try again'),
-            ),
-          );
-        }
-        if (state is UserLoaded) {
-          return ListView.builder(
-            itemCount: state.users.length,
-            itemBuilder: (context, index) {
-              DataProvider _dataProvider = DataProvider();
-              ConnectivityService _connectivityService = ConnectivityService();
+    return RefreshIndicator(
+      displacement: 50,
+      onRefresh: refresh,
+      child: BlocBuilder<UserBloc, UserState>(
+        builder: (context, state) {
+          if (state is UserInitial) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          if (state is UserListProcessing) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          if (state is UserNoInternetState) {
+            return Center(
+              child: Center(
+                child: Text('Please check your internet connection and try again'),
+              ),
+            );
+          }
+          if (state is UserLoaded) {
+            return ListView.builder(
+              itemCount: state.users.length,
+              itemBuilder: (context, index) {
+                DataProvider _dataProvider = DataProvider();
+                ConnectivityService _connectivityService = ConnectivityService();
 
-              return ListTile(
-                title: Text('${state.users[index].name}'),
-                subtitle: Text('${state.users[index].username}'),
-                leading: CircleAvatar(
-                  backgroundImage:
-                  AssetImage('assets/images/default_avatar.png'),
-                ),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) {
-                          return BlocProvider(
-                            create: (context) => PostBloc(
-                                _dataProvider,
-                                _connectivityService
-                            )..add(FetchPostList()),
-                            child: PostsView(userId: state.users[index].id),
-                          );
-                        }
-                    ),
-                  );
-                },
-              );
-            },
-          );
-        }
+                return ListTile(
+                  title: Text('${state.users[index].name}'),
+                  subtitle: Text('${state.users[index].username}'),
+                  leading: CircleAvatar(
+                    backgroundImage:
+                    AssetImage('assets/images/default_avatar.png'),
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) {
+                            return BlocProvider(
+                              create: (context) => PostBloc(
+                                  _dataProvider,
+                                  _connectivityService
+                              )..add(FetchPostList()),
+                              child: PostsView(userId: state.users[index].id),
+                            );
+                          }
+                      ),
+                    );
+                  },
+                );
+              },
+            );
+          }
 
-        return Center(
-            child: Text('Something went wrong!'),
-        );
-      },
-    ) : Center(child: Text('No internet connection'));
+          return Center(
+              child: Text('Something went wrong!'),
+          );
+        },
+      ),
+    );
   }
 }

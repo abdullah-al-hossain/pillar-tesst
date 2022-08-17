@@ -10,7 +10,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   final DataProvider _dataProvider;
   final ConnectivityService _connectivityService;
 
-  UserBloc(this._dataProvider, this._connectivityService) : super(UserListProcessing()) {
+  UserBloc(this._dataProvider, this._connectivityService) : super(UserInitial()) {
     _connectivityService.connectivityStream.stream.listen((event) {
       if (event == ConnectivityResult.none) {
         print('no internet');
@@ -22,9 +22,16 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     });
 
     on<FetchUserList>((event, emit) async {
-      emit(UserInitial());
-      final List<User> users = await _dataProvider.getUser('users');
-      emit(UserLoaded(users: users));
+      if (event is FetchUserList) {
+        try {
+          emit(UserInitial());
+          final List<User> users = await _dataProvider.getUser('users');
+          emit(UserLoaded(users: users));
+        } catch (_) {
+          emit(UserNoInternetState());
+        }
+      }
+
     });
 
     on<NoInternetEvent>((event, emit) {
